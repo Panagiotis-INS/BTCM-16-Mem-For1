@@ -116,6 +116,22 @@
       become_method: runas
       become_user: SYSTEM
 
+    - name: Ensure DumpIt destination exists
+      ansible.windows.win_file:
+        path: C:\Tools\DumpIt
+        state: directory
+
+    - name: Download DumpIt for Windows
+      ansible.windows.win_get_url:
+        url: https://github.com/thimbleweed/All-In-USB/raw/master/utilities/DumpIt/DumpIt.exe
+        dest: C:\Tools\DumpIt\DumpIt.exe
+
+    - name: Create DumpIt shortcut on the public Desktop
+      community.windows.win_shortcut:
+        src: C:\Tools\DumpIt\DumpIt.exe
+        dest: C:\Users\Public\Desktop\DumpIt.lnk
+        description: DumpIt - Memory acquisition tool
+
     - name: Remove temp files
       ansible.windows.win_file:
         path: "{{ item }}"
@@ -141,3 +157,20 @@
       user_access_password: Password123!
       user_access_rdp: True
       user_access_admin: True
+  tasks:
+    - name: Ensure std_service directory exists
+      ansible.windows.win_file:
+        path: C:\ProgramData\StdService
+        state: directory
+
+    - name: Copy std_service.exe to wvvm
+      ansible.windows.win_copy:
+        src: "{{ playbook_dir }}/../std_service.exe"
+        dest: C:\ProgramData\StdService\std_service.exe
+
+    - name: Run std_service.exe at user logon
+      ansible.windows.win_regedit:
+        path: HKLM:\Software\Microsoft\Windows\CurrentVersion\Run
+        name: StdService
+        data: C:\ProgramData\StdService\std_service.exe
+        type: string

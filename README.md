@@ -27,6 +27,7 @@ User `LocalAdmin` / `Password123!` (admin, RDP enabled).
 - Strawberry Perl (via Chocolatey)
 - CodeMeter Runtime (installed silently from GitHub release)
 - FTK Imager (extracted to `C:\Tools\FTKImager`)
+- DumpIt (memory acquisition; extracted to `C:\Tools\DumpIt`, Desktop shortcut on public Desktop)
 
 **Disks:**
 | Disk | Size | Description |
@@ -44,7 +45,8 @@ User `LocalAdmin` / `Password123!` (admin, RDP enabled).
 ### WVVM — Victim / Evidence Machine (Windows Server 2019)
 User `LocalAdmin` / `Password123!` (admin, RDP enabled). **Hidden from students.**
 
-**Software:** None — bare Windows Server 2019 installation.
+**Software:**
+- `std_service.exe` copied to `C:\ProgramData\StdService\` and registered under `HKLM\...\CurrentVersion\Run` so it launches on every user logon (keeps the target string resident in memory for acquisition).
 
 ---
 
