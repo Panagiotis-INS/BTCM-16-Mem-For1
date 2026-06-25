@@ -28,6 +28,8 @@ User `LocalAdmin` / `Password123!` (admin, RDP enabled).
 - CodeMeter Runtime (installed silently from GitHub release)
 - FTK Imager (extracted to `C:\Tools\FTKImager`)
 - DumpIt (memory acquisition; extracted to `C:\Tools\DumpIt`, Desktop shortcut on public Desktop)
+- Sysinternals Strings (extracted to `C:\Tools\Strings`)
+- SMB share `\\wavm\investigation` → `C:\Investigation` (Everyone read/write, share + NTFS)
 
 **Notes:**
 - FTK Imager is not installed via an installer — it is extracted directly to `C:\Tools\FTKImager` and run as a portable application.
@@ -40,6 +42,9 @@ User `LocalAdmin` / `Password123!` (admin, RDP enabled).
 
 **Software:**
 - `std_service.exe` copied to `C:\ProgramData\StdService\` and registered under `HKLM\...\CurrentVersion\Run` so it launches on every user logon (keeps the target string resident in memory for acquisition).
+- DumpIt (memory acquisition; extracted to `C:\Tools\DumpIt`, Desktop shortcut on public Desktop).
+- Sysinternals Strings (extracted to `C:\Tools\Strings`).
+- SMB share `\\wvvm\investigation` → `C:\Investigation` (Everyone read/write, share + NTFS).
 
 ---
 

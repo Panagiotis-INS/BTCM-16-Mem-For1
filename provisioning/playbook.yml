@@ -82,6 +82,21 @@
         dest: C:\Users\Public\Desktop\DumpIt.lnk
         description: DumpIt - Memory acquisition tool
 
+    - name: Ensure Strings destination exists
+      ansible.windows.win_file:
+        path: C:\Tools\Strings
+        state: directory
+
+    - name: Download Sysinternals Strings
+      ansible.windows.win_get_url:
+        url: https://download.sysinternals.com/files/Strings.zip
+        dest: C:\Windows\Temp\Strings.zip
+
+    - name: Extract Strings
+      community.windows.win_unzip:
+        src: C:\Windows\Temp\Strings.zip
+        dest: C:\Tools\Strings
+
     - name: Remove temp files
       ansible.windows.win_file:
         path: "{{ item }}"
@@ -90,6 +105,31 @@
         - C:\Windows\Temp\CodeMeterRuntime.zip
         - C:\Windows\Temp\CodeMeter
         - C:\Windows\Temp\FTKImager.zip
+        - C:\Windows\Temp\Strings.zip
+
+    - name: Ensure Investigation share directory exists
+      ansible.windows.win_file:
+        path: C:\Investigation
+        state: directory
+
+    - name: Grant Everyone Modify on Investigation folder (NTFS)
+      ansible.windows.win_acl:
+        path: C:\Investigation
+        user: Everyone
+        rights: Modify
+        type: allow
+        state: present
+        inherit: ContainerInherit, ObjectInherit
+        propagation: None
+
+    - name: Create Investigation SMB share with Everyone read/write
+      ansible.windows.win_share:
+        name: investigation
+        path: C:\Investigation
+        description: Forensic investigation share (read/write for Everyone)
+        change: Everyone
+        read: Everyone
+        state: present
 
 - name: Configure wvvm
   hosts: wvvm
@@ -123,3 +163,63 @@
         name: StdService
         data: C:\ProgramData\StdService\std_service.exe
         type: string
+
+    - name: Ensure DumpIt destination exists
+      ansible.windows.win_file:
+        path: C:\Tools\DumpIt
+        state: directory
+
+    - name: Download DumpIt for Windows
+      ansible.windows.win_get_url:
+        url: https://github.com/thimbleweed/All-In-USB/raw/master/utilities/DumpIt/DumpIt.exe
+        dest: C:\Tools\DumpIt\DumpIt.exe
+
+    - name: Create DumpIt shortcut on the public Desktop
+      community.windows.win_shortcut:
+        src: C:\Tools\DumpIt\DumpIt.exe
+        dest: C:\Users\Public\Desktop\DumpIt.lnk
+        description: DumpIt - Memory acquisition tool
+
+    - name: Ensure Strings destination exists
+      ansible.windows.win_file:
+        path: C:\Tools\Strings
+        state: directory
+
+    - name: Download Sysinternals Strings
+      ansible.windows.win_get_url:
+        url: https://download.sysinternals.com/files/Strings.zip
+        dest: C:\Windows\Temp\Strings.zip
+
+    - name: Extract Strings
+      community.windows.win_unzip:
+        src: C:\Windows\Temp\Strings.zip
+        dest: C:\Tools\Strings
+
+    - name: Remove temp files
+      ansible.windows.win_file:
+        path: C:\Windows\Temp\Strings.zip
+        state: absent
+
+    - name: Ensure Investigation share directory exists
+      ansible.windows.win_file:
+        path: C:\Investigation
+        state: directory
+
+    - name: Grant Everyone Modify on Investigation folder (NTFS)
+      ansible.windows.win_acl:
+        path: C:\Investigation
+        user: Everyone
+        rights: Modify
+        type: allow
+        state: present
+        inherit: ContainerInherit, ObjectInherit
+        propagation: None
+
+    - name: Create Investigation SMB share with Everyone read/write
+      ansible.windows.win_share:
+        name: investigation
+        path: C:\Investigation
+        description: Forensic investigation share (read/write for Everyone)
+        change: Everyone
+        read: Everyone
+        state: present
