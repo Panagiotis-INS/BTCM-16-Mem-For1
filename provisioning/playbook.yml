@@ -1,0 +1,143 @@
+- name: Configure wavm
+  hosts: wavm
+  gather_facts: false
+  pre_tasks:
+    - name: Wait for PSRP listener to accept connections
+      ansible.builtin.wait_for_connection:
+        delay: 0
+        sleep: 10
+        timeout: 900
+  roles:
+    - role: ansible-role-user-access-windows
+      user_access_username: LocalAdmin
+      user_access_password: Password123!
+      user_access_rdp: True
+      user_access_admin: True
+  tasks:
+    - name: Install Git, Autopsy, and Strawberry Perl via Chocolatey
+      chocolatey.chocolatey.win_chocolatey:
+        name:
+          - git
+          - autopsy
+          - strawberryperl
+        state: present
+
+    - name: Download CodeMeter runtime
+      ansible.windows.win_get_url:
+        url: https://github.com/sderziotis/btcmp-16-windows/releases/download/v1.3/CodeMeterRuntime.zip
+        dest: C:\Windows\Temp\CodeMeterRuntime.zip
+
+    - name: Extract CodeMeter runtime
+      community.windows.win_unzip:
+        src: C:\Windows\Temp\CodeMeterRuntime.zip
+        dest: C:\Windows\Temp\CodeMeter
+
+    - name: Install CodeMeter runtime silently
+      ansible.windows.win_shell: |
+        $p = Start-Process -FilePath "C:\Windows\Temp\CodeMeter\CodeMeterRuntime.exe" `
+          -ArgumentList "/q /Log /LogFile C:\Windows\Temp\codemeter_install.log" `
+          -PassThru
+        if (-not $p.WaitForExit(300000)) {
+          $p.Kill()
+          Write-Output "TIMED OUT"
+        }
+        Get-Content C:\Windows\Temp\codemeter_install.log -ErrorAction SilentlyContinue
+      become: yes
+      become_method: runas
+      become_user: SYSTEM
+      register: codemeter_result
+
+    - name: Print CodeMeter install output
+      ansible.builtin.debug:
+        msg: "{{ codemeter_result.stdout_lines }}"
+
+    - name: Download FTK Imager
+      ansible.windows.win_get_url:
+        url: https://github.com/sderziotis/btcmp-16-windows/releases/download/v1.3/FTK.Imager.zip
+        dest: C:\Windows\Temp\FTKImager.zip
+
+    - name: Ensure FTK Imager destination exists
+      ansible.windows.win_file:
+        path: C:\Tools\FTKImager
+        state: directory
+
+    - name: Extract FTK Imager
+      community.windows.win_unzip:
+        src: C:\Windows\Temp\FTKImager.zip
+        dest: C:\Tools\FTKImager
+
+    - name: Download NTFS forensic disk image
+      ansible.windows.win_get_url:
+        url: https://github.com/sderziotis/btcmp-16-windows/releases/download/v1.3/ntfs-img-kw-1.dd
+        dest: C:\Windows\Temp\ntfs-img-kw-1.dd
+
+    - name: Clear read-only attribute on PhysicalDrive1 before writing
+      ansible.windows.win_shell: |
+        $script = @"
+        select disk 1
+        attributes disk clear readonly
+        "@
+        $script | diskpart
+      become: yes
+      become_method: runas
+      become_user: SYSTEM
+
+    - name: Write DD image to second physical disk (PhysicalDrive1)
+      ansible.windows.win_shell: |
+        $ddSrc = "C:\Windows\Temp\ntfs-img-kw-1.dd"
+        $disk = "\\.\PhysicalDrive1"
+        $bufSize = 1MB
+        $srcStream = [System.IO.File]::OpenRead($ddSrc)
+        $dstStream = [System.IO.File]::Open($disk, [System.IO.FileMode]::Open, [System.IO.FileAccess]::Write, [System.IO.FileShare]::None)
+        $buf = New-Object byte[] $bufSize
+        while (($read = $srcStream.Read($buf, 0, $buf.Length)) -gt 0) {
+          $dstStream.Write($buf, 0, $read)
+        }
+        $srcStream.Close()
+        $dstStream.Flush()
+        $dstStream.Close()
+      become: yes
+      become_method: runas
+      become_user: SYSTEM
+
+    - name: Rescan, online disk, assign drive letter E, and set read-only via diskpart
+      ansible.windows.win_shell: |
+        $script = @"
+        rescan
+        select disk 1
+        online disk
+        select partition 1
+        assign letter=E
+        select disk 1
+        attributes disk set readonly
+        "@
+        $script | diskpart
+      become: yes
+      become_method: runas
+      become_user: SYSTEM
+
+    - name: Remove temp files
+      ansible.windows.win_file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - C:\Windows\Temp\CodeMeterRuntime.zip
+        - C:\Windows\Temp\CodeMeter
+        - C:\Windows\Temp\FTKImager.zip
+        - C:\Windows\Temp\ntfs-img-kw-1.dd
+
+- name: Configure wvvm
+  hosts: wvvm
+  gather_facts: false
+  pre_tasks:
+    - name: Wait for PSRP listener to accept connections
+      ansible.builtin.wait_for_connection:
+        delay: 0
+        sleep: 10
+        timeout: 900
+  roles:
+    - role: ansible-role-user-access-windows
+      user_access_username: LocalAdmin
+      user_access_password: Password123!
+      user_access_rdp: True
+      user_access_admin: True
