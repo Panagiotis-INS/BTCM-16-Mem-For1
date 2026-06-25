@@ -66,56 +66,6 @@
         src: C:\Windows\Temp\FTKImager.zip
         dest: C:\Tools\FTKImager
 
-    - name: Download NTFS forensic disk image
-      ansible.windows.win_get_url:
-        url: https://github.com/sderziotis/btcmp-16-windows/releases/download/v1.3/ntfs-img-kw-1.dd
-        dest: C:\Windows\Temp\ntfs-img-kw-1.dd
-
-    - name: Clear read-only attribute on PhysicalDrive1 before writing
-      ansible.windows.win_shell: |
-        $script = @"
-        select disk 1
-        attributes disk clear readonly
-        "@
-        $script | diskpart
-      become: yes
-      become_method: runas
-      become_user: SYSTEM
-
-    - name: Write DD image to second physical disk (PhysicalDrive1)
-      ansible.windows.win_shell: |
-        $ddSrc = "C:\Windows\Temp\ntfs-img-kw-1.dd"
-        $disk = "\\.\PhysicalDrive1"
-        $bufSize = 1MB
-        $srcStream = [System.IO.File]::OpenRead($ddSrc)
-        $dstStream = [System.IO.File]::Open($disk, [System.IO.FileMode]::Open, [System.IO.FileAccess]::Write, [System.IO.FileShare]::None)
-        $buf = New-Object byte[] $bufSize
-        while (($read = $srcStream.Read($buf, 0, $buf.Length)) -gt 0) {
-          $dstStream.Write($buf, 0, $read)
-        }
-        $srcStream.Close()
-        $dstStream.Flush()
-        $dstStream.Close()
-      become: yes
-      become_method: runas
-      become_user: SYSTEM
-
-    - name: Rescan, online disk, assign drive letter E, and set read-only via diskpart
-      ansible.windows.win_shell: |
-        $script = @"
-        rescan
-        select disk 1
-        online disk
-        select partition 1
-        assign letter=E
-        select disk 1
-        attributes disk set readonly
-        "@
-        $script | diskpart
-      become: yes
-      become_method: runas
-      become_user: SYSTEM
-
     - name: Ensure DumpIt destination exists
       ansible.windows.win_file:
         path: C:\Tools\DumpIt
@@ -140,7 +90,6 @@
         - C:\Windows\Temp\CodeMeterRuntime.zip
         - C:\Windows\Temp\CodeMeter
         - C:\Windows\Temp\FTKImager.zip
-        - C:\Windows\Temp\ntfs-img-kw-1.dd
 
 - name: Configure wvvm
   hosts: wvvm

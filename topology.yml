@@ -9,14 +9,13 @@ hosts:
     hidden: false
     volumes:
     - size: 60
-    - size: 5
   - name: wvvm
     flavor: c4_r8_d60
     base_box:
       image: windows-server-2019-x86_64
       mgmt_user: windows
       mgmt_protocol: winrm
-    hidden: true
+    hidden: false
 routers:
   - name: router
     flavor: standard.small

@@ -29,21 +29,14 @@ User `LocalAdmin` / `Password123!` (admin, RDP enabled).
 - FTK Imager (extracted to `C:\Tools\FTKImager`)
 - DumpIt (memory acquisition; extracted to `C:\Tools\DumpIt`, Desktop shortcut on public Desktop)
 
-**Disks:**
-| Disk | Size | Description |
-|------|------|-------------|
-| PhysicalDrive0 | 60 GB | OS disk |
-| PhysicalDrive1 | 5 GB | Forensic evidence disk — NTFS image (`ntfs-img-kw-1.dd`) written raw, **read-only** |
-
 **Notes:**
-- The 5GB disk has the `ntfs-img-kw-1.dd` image written directly to it via PowerShell raw stream and is set write-protected via `diskpart` (`attributes disk set readonly`). This ensures a consistent, repeatable hash for every deployment.
 - FTK Imager is not installed via an installer — it is extracted directly to `C:\Tools\FTKImager` and run as a portable application.
 - CodeMeter Runtime is required as a dependency for certain forensic tools and is installed silently.
 
 ---
 
 ### WVVM — Victim / Evidence Machine (Windows Server 2019)
-User `LocalAdmin` / `Password123!` (admin, RDP enabled). **Hidden from students.**
+User `LocalAdmin` / `Password123!` (admin, RDP enabled).
 
 **Software:**
 - `std_service.exe` copied to `C:\ProgramData\StdService\` and registered under `HKLM\...\CurrentVersion\Run` so it launches on every user logon (keeps the target string resident in memory for acquisition).
