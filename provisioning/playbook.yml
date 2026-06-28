@@ -21,35 +21,6 @@
           - strawberryperl
         state: present
 
-    - name: Download CodeMeter runtime
-      ansible.windows.win_get_url:
-        url: https://github.com/sderziotis/btcmp-16-windows/releases/download/v1.3/CodeMeterRuntime.zip
-        dest: C:\Windows\Temp\CodeMeterRuntime.zip
-
-    - name: Extract CodeMeter runtime
-      community.windows.win_unzip:
-        src: C:\Windows\Temp\CodeMeterRuntime.zip
-        dest: C:\Windows\Temp\CodeMeter
-
-    - name: Install CodeMeter runtime silently
-      ansible.windows.win_shell: |
-        $p = Start-Process -FilePath "C:\Windows\Temp\CodeMeter\CodeMeterRuntime.exe" `
-          -ArgumentList "/q /Log /LogFile C:\Windows\Temp\codemeter_install.log" `
-          -PassThru
-        if (-not $p.WaitForExit(300000)) {
-          $p.Kill()
-          Write-Output "TIMED OUT"
-        }
-        Get-Content C:\Windows\Temp\codemeter_install.log -ErrorAction SilentlyContinue
-      become: yes
-      become_method: runas
-      become_user: SYSTEM
-      register: codemeter_result
-
-    - name: Print CodeMeter install output
-      ansible.builtin.debug:
-        msg: "{{ codemeter_result.stdout_lines }}"
-
     - name: Ensure DumpIt destination exists
       ansible.windows.win_file:
         path: C:\Tools\DumpIt
@@ -83,12 +54,8 @@
 
     - name: Remove temp files
       ansible.windows.win_file:
-        path: "{{ item }}"
+        path: C:\Windows\Temp\Strings.zip
         state: absent
-      loop:
-        - C:\Windows\Temp\CodeMeterRuntime.zip
-        - C:\Windows\Temp\CodeMeter
-        - C:\Windows\Temp\Strings.zip
 
     - name: Ensure Investigation share directory exists
       ansible.windows.win_file:

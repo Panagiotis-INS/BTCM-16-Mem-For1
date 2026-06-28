@@ -25,13 +25,9 @@ User `LocalAdmin` / `Password123!` (admin, RDP enabled).
 **Software:**
 - Git (via Chocolatey)
 - Strawberry Perl (via Chocolatey)
-- CodeMeter Runtime (installed silently from GitHub release)
 - DumpIt (memory acquisition; extracted to `C:\Tools\DumpIt`, Desktop shortcut on public Desktop)
 - Sysinternals Strings (extracted to `C:\Tools\Strings`)
 - SMB share `\\wavm\investigation` → `C:\Investigation` (Everyone read/write, share + NTFS)
-
-**Notes:**
-- CodeMeter Runtime is required as a dependency for certain forensic tools and is installed silently.
 
 ---
 
