@@ -131,11 +131,16 @@
       user_access_ssh: true
       user_access_sudo: true
   tasks:
-    - name: Enable universe repository (needed for python2.7)
-      ansible.builtin.apt_repository:
-        repo: "deb http://archive.ubuntu.com/ubuntu {{ ansible_distribution_release }} universe"
+    - name: Install software-properties-common (provides add-apt-repository)
+      ansible.builtin.apt:
+        name: software-properties-common
         state: present
-        filename: ubuntu-universe
+        update_cache: true
+
+    - name: Add deadsnakes PPA (provides python2.7 on Noble)
+      ansible.builtin.apt_repository:
+        repo: ppa:deadsnakes/ppa
+        state: present
 
     - name: Install python2.7 and git
       ansible.builtin.apt:

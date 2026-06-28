@@ -50,7 +50,7 @@ User `LocalAdmin` / `Password123!` (admin, RDP enabled).
 User `Maria` / `Password123!` (SSH + sudo enabled).
 
 **Software:**
-- `python2.7` (from the `universe` repo)
+- `python2.7` (from the `deadsnakes` PPA — Noble no longer ships python2.7 in universe)
 - `pip` for Python 2.7 (installed via `https://bootstrap.pypa.io/pip/2.7/get-pip.py`)
 - `git`
 
