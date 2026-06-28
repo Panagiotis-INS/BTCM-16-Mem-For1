@@ -14,13 +14,6 @@
       user_access_rdp: True
       user_access_admin: True
   tasks:
-    - name: Install Git and Strawberry Perl via Chocolatey
-      chocolatey.chocolatey.win_chocolatey:
-        name:
-          - git
-          - strawberryperl
-        state: present
-
     - name: Ensure DumpIt destination exists
       ansible.windows.win_file:
         path: C:\Tools\DumpIt

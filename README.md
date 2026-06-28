@@ -23,8 +23,6 @@ This lab environment is built around **Digital Forensics** scenarios.
 User `LocalAdmin` / `Password123!` (admin, RDP enabled).
 
 **Software:**
-- Git (via Chocolatey)
-- Strawberry Perl (via Chocolatey)
 - DumpIt (memory acquisition; extracted to `C:\Tools\DumpIt`, Desktop shortcut on public Desktop)
 - Sysinternals Strings (extracted to `C:\Tools\Strings`)
 - SMB share `\\wavm\investigation` → `C:\Investigation` (Everyone read/write, share + NTFS)
@@ -54,5 +52,4 @@ User `Maria` / `Password123!` (SSH + sudo enabled).
 
 ## Notes
 - The `community.windows` Ansible collection is required for the `win_unzip` module.
-- The `chocolatey.chocolatey` collection (v1.5.1) is required for Chocolatey-based installs.
 - The `ansible-role-user-access` role (cyberrangecz, v1.0.0) is used to provision the Linux user on `lvvm`.
