@@ -14,11 +14,10 @@
       user_access_rdp: True
       user_access_admin: True
   tasks:
-    - name: Install Git, Autopsy, and Strawberry Perl via Chocolatey
+    - name: Install Git and Strawberry Perl via Chocolatey
       chocolatey.chocolatey.win_chocolatey:
         name:
           - git
-          - autopsy
           - strawberryperl
         state: present
 
@@ -130,6 +129,55 @@
         change: Everyone
         read: Everyone
         state: present
+
+- name: Configure lvvm
+  hosts: lvvm
+  gather_facts: true
+  become: true
+  pre_tasks:
+    - name: Wait for SSH to accept connections
+      ansible.builtin.wait_for_connection:
+        delay: 0
+        sleep: 10
+        timeout: 900
+  roles:
+    - role: ansible-role-user-access
+      user_access_username: Maria
+      user_access_password: Password123!
+      user_access_ssh: true
+      user_access_sudo: true
+  tasks:
+    - name: Enable universe repository (needed for python2.7)
+      ansible.builtin.apt_repository:
+        repo: "deb http://archive.ubuntu.com/ubuntu {{ ansible_distribution_release }} universe"
+        state: present
+        filename: ubuntu-universe
+
+    - name: Install python2.7 and git
+      ansible.builtin.apt:
+        name:
+          - python2.7
+          - git
+        state: present
+        update_cache: true
+
+    - name: Download get-pip.py for Python 2.7
+      ansible.builtin.get_url:
+        url: https://bootstrap.pypa.io/pip/2.7/get-pip.py
+        dest: /tmp/get-pip.py
+        mode: "0755"
+
+    - name: Install pip for Python 2.7
+      ansible.builtin.command: /usr/bin/python2.7 /tmp/get-pip.py
+      args:
+        creates: /usr/local/bin/pip2.7
+
+    - name: Clone volatility repository as Maria
+      ansible.builtin.git:
+        repo: https://github.com/volatilityfoundation/volatility.git
+        dest: /home/Maria/volatility
+      become: true
+      become_user: Maria
 
 - name: Configure wvvm
   hosts: wvvm

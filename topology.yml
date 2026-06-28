@@ -16,6 +16,13 @@ hosts:
       mgmt_user: windows
       mgmt_protocol: winrm
     hidden: false
+  - name: lvvm
+    flavor: c4_r8_d60
+    base_box:
+      image: xubuntu-noble-x86_64
+      mgmt_user: ubuntu
+      mgmt_protocol: ssh
+    hidden: false
 routers:
   - name: router
     flavor: standard.small
@@ -39,6 +46,9 @@ net_mappings:
   - host: wvvm
     network: access-switch
     ip: 10.10.10.4
+  - host: lvvm
+    network: access-switch
+    ip: 10.10.10.5
 router_mappings:
   - router: router
     network: access-switch
