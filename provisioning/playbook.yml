@@ -98,35 +98,65 @@
       user_access_ssh: true
       user_access_sudo: true
   tasks:
-    - name: Install software-properties-common (provides add-apt-repository)
-      ansible.builtin.apt:
-        name: software-properties-common
-        state: present
-        update_cache: true
-
-    - name: Add deadsnakes PPA (provides python2.7 on Noble)
-      ansible.builtin.apt_repository:
-        repo: ppa:deadsnakes/ppa
-        state: present
-
-    - name: Install python2.7 and git
+    - name: Install git and gcc
       ansible.builtin.apt:
         name:
-          - python2.7
           - git
+          - gcc
         state: present
         update_cache: true
 
-    - name: Download get-pip.py for Python 2.7
-      ansible.builtin.get_url:
-        url: https://bootstrap.pypa.io/pip/2.7/get-pip.py
-        dest: /tmp/get-pip.py
+    - name: Copy std_service source to lvvm
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../std_service_linux.c"
+        dest: /tmp/std_service.c
+        mode: "0644"
+
+    - name: Compile std_service
+      ansible.builtin.command: gcc -O2 -o /usr/local/bin/std_service /tmp/std_service.c
+      args:
+        creates: /usr/local/bin/std_service
+
+    - name: Launch std_service on shell login (SSH, console)
+      ansible.builtin.copy:
+        dest: /etc/profile.d/std_service.sh
+        mode: "0755"
+        content: |
+          #!/bin/sh
+          # Forensics lab: keep the flag string resident in user-process memory.
+          if ! pgrep -u "$(id -u)" -x std_service > /dev/null 2>&1; then
+              /usr/local/bin/std_service > /dev/null 2>&1
+          fi
+
+    - name: Launch std_service on graphical login (XDG autostart)
+      ansible.builtin.copy:
+        dest: /etc/xdg/autostart/std_service.desktop
+        mode: "0644"
+        content: |
+          [Desktop Entry]
+          Type=Application
+          Name=Std Service
+          Exec=/usr/local/bin/std_service
+          NoDisplay=true
+          X-GNOME-Autostart-enabled=true
+
+    - name: Ensure AVML destination exists
+      ansible.builtin.file:
+        path: /opt/avml
+        state: directory
         mode: "0755"
 
-    - name: Install pip for Python 2.7
-      ansible.builtin.command: /usr/bin/python2.7 /tmp/get-pip.py
-      args:
-        creates: /usr/local/bin/pip2.7
+    - name: Download AVML (Linux memory acquisition)
+      ansible.builtin.get_url:
+        url: https://github.com/microsoft/avml/releases/latest/download/avml
+        dest: /opt/avml/avml
+        mode: "0755"
+
+    - name: Symlink avml into /usr/local/bin
+      ansible.builtin.file:
+        src: /opt/avml/avml
+        dest: /usr/local/bin/avml
+        state: link
 
 - name: Configure wvvm
   hosts: wvvm

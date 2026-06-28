@@ -46,9 +46,9 @@ User `LocalAdmin` / `Password123!` (admin, RDP enabled).
 User `Maria` / `Password123!` (SSH + sudo enabled).
 
 **Software:**
-- `python2.7` (from the `deadsnakes` PPA — Noble no longer ships python2.7 in universe)
-- `pip` for Python 2.7 (installed via `https://bootstrap.pypa.io/pip/2.7/get-pip.py`)
-- `git`
+- `git`, `gcc`
+- `std_service` — Linux equivalent of `std_service.exe`. Compiled from `std_service_linux.c` to `/usr/local/bin/std_service`; daemonizes, parks the flag string in an `mlock`-pinned page, and idles in a loop. Auto-launches on every login via `/etc/profile.d/std_service.sh` (SSH and console) and `/etc/xdg/autostart/std_service.desktop` (graphical sessions).
+- AVML (Linux memory acquisition, from Microsoft) — installed to `/opt/avml/avml` with a symlink at `/usr/local/bin/avml`. Single static binary, no kernel module; produces LiME-format dumps. Run as `sudo avml /path/to/memory.lime`.
 
 ---
 
