@@ -50,21 +50,6 @@
       ansible.builtin.debug:
         msg: "{{ codemeter_result.stdout_lines }}"
 
-    - name: Download FTK Imager
-      ansible.windows.win_get_url:
-        url: https://github.com/sderziotis/btcmp-16-windows/releases/download/v1.3/FTK.Imager.zip
-        dest: C:\Windows\Temp\FTKImager.zip
-
-    - name: Ensure FTK Imager destination exists
-      ansible.windows.win_file:
-        path: C:\Tools\FTKImager
-        state: directory
-
-    - name: Extract FTK Imager
-      community.windows.win_unzip:
-        src: C:\Windows\Temp\FTKImager.zip
-        dest: C:\Tools\FTKImager
-
     - name: Ensure DumpIt destination exists
       ansible.windows.win_file:
         path: C:\Tools\DumpIt
@@ -103,7 +88,6 @@
       loop:
         - C:\Windows\Temp\CodeMeterRuntime.zip
         - C:\Windows\Temp\CodeMeter
-        - C:\Windows\Temp\FTKImager.zip
         - C:\Windows\Temp\Strings.zip
 
     - name: Ensure Investigation share directory exists
@@ -171,13 +155,6 @@
       ansible.builtin.command: /usr/bin/python2.7 /tmp/get-pip.py
       args:
         creates: /usr/local/bin/pip2.7
-
-    - name: Clone volatility repository as Maria
-      ansible.builtin.git:
-        repo: https://github.com/volatilityfoundation/volatility.git
-        dest: /home/Maria/volatility
-      become: true
-      become_user: Maria
 
 - name: Configure wvvm
   hosts: wvvm

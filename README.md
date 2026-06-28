@@ -26,13 +26,11 @@ User `LocalAdmin` / `Password123!` (admin, RDP enabled).
 - Git (via Chocolatey)
 - Strawberry Perl (via Chocolatey)
 - CodeMeter Runtime (installed silently from GitHub release)
-- FTK Imager (extracted to `C:\Tools\FTKImager`)
 - DumpIt (memory acquisition; extracted to `C:\Tools\DumpIt`, Desktop shortcut on public Desktop)
 - Sysinternals Strings (extracted to `C:\Tools\Strings`)
 - SMB share `\\wavm\investigation` → `C:\Investigation` (Everyone read/write, share + NTFS)
 
 **Notes:**
-- FTK Imager is not installed via an installer — it is extracted directly to `C:\Tools\FTKImager` and run as a portable application.
 - CodeMeter Runtime is required as a dependency for certain forensic tools and is installed silently.
 
 ---
@@ -55,7 +53,6 @@ User `Maria` / `Password123!` (SSH + sudo enabled).
 - `python2.7` (from the `universe` repo)
 - `pip` for Python 2.7 (installed via `https://bootstrap.pypa.io/pip/2.7/get-pip.py`)
 - `git`
-- Volatility cloned to `/home/Maria/volatility` (`git clone https://github.com/volatilityfoundation/volatility.git`)
 
 ---
 
