@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include <sys/mman.h>
 
-static const char flag[] = "CTF{Str1ngs_4_4ensics}";
+static const char flag[] = "CTF{L1nuXX_Str1ngs_4_4ensics}";
 
 int main(void) {
     if (daemon(0, 0) != 0) return 1;
